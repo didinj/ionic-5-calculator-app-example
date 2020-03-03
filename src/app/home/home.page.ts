@@ -12,6 +12,7 @@ export class HomePage {
   operator: any = null;
   newcursor = false;
   isc = false;
+  iscomma = false;
 
   constructor() {}
 
@@ -89,6 +90,17 @@ export class HomePage {
       case '9':
         this.addnumber('9');
         break;
+      case ',':
+        this.addcomma();
+        break;
+    }
+  }
+
+  addcomma() {
+    if (this.iscomma === false) {
+      this.iscomma = true;
+    } else {
+      this.iscomma = false;
     }
   }
 
@@ -98,22 +110,47 @@ export class HomePage {
         this.display = nbr;
         this.newcursor = false;
       } else if (this.display !== '0') {
-        this.display = this.display.toString() + nbr;
+        if (this.iscomma === true) {
+          this.display = `${this.display.toString()}.${nbr}`;
+        } else {
+          this.display = this.display.toString() + nbr;
+        }
+      } else if (this.display === '0') {
+        if (this.iscomma === true) {
+          this.display = `${this.display.toString()}.${nbr}`;
+        }
       }
     } else {
       if (this.newcursor === true) {
         this.display = nbr;
         this.newcursor = false;
       } else if (this.display === '0') {
-        this.display = nbr;
+        if (this.iscomma === true) {
+          if (this.display.toString().indexOf('.') > -1) {
+            this.display = this.display.toString() + nbr;
+          } else {
+            this.display = `${this.display.toString()}.${nbr}`;
+          }
+        } else {
+          this.display = nbr;
+        }
       } else {
-        this.display = this.display.toString() + nbr;
+        if (this.iscomma === true) {
+          if (this.display.toString().indexOf('.') > -1) {
+            this.display = this.display.toString() + nbr;
+          } else {
+            this.display = `${this.display.toString()}.${nbr}`;
+          }
+        } else {
+          this.display = this.display.toString() + nbr;
+        }
       }
     }
     this.isc = true;
   }
 
   addpercent() {
+    this.iscomma = false;
     const dispval = parseInt(this.display, 0) / 100;
     this.display = dispval.toString();
   }
@@ -121,30 +158,50 @@ export class HomePage {
   addoperator(op: string) {
     if (this.newcursor === false) {
       if (this.firstval === null) {
-        this.firstval = parseInt(this.display, 0);
+        if (this.iscomma === true) {
+          this.firstval = parseFloat(this.display);
+        } else {
+          this.firstval = parseInt(this.display, 0);
+        }
       }
       if (this.firstval !== null && this.operator !== null) {
         this.calclast();
       }
     }
+    this.iscomma = false;
     this.operator = op;
     this.newcursor = true;
   }
 
   calclast() {
-    console.log(this.operator);
     switch (this.operator) {
       case ':':
-        this.firstval = (this.firstval / parseInt(this.display, 0));
+        if (this.iscomma === true) {
+          this.firstval = (this.firstval / parseFloat(this.display));
+        } else {
+          this.firstval = (this.firstval / parseInt(this.display, 0));
+        }
         break;
       case 'X':
-        this.firstval = (this.firstval * parseInt(this.display, 0));
+        if (this.iscomma === true) {
+          this.firstval = (this.firstval * parseFloat(this.display));
+        } else {
+          this.firstval = (this.firstval * parseInt(this.display, 0));
+        }
         break;
       case '-':
-        this.firstval = (this.firstval - parseInt(this.display, 0));
+        if (this.iscomma === true) {
+          this.firstval = (this.firstval - parseFloat(this.display));
+        } else {
+          this.firstval = (this.firstval - parseInt(this.display, 0));
+        }
         break;
       case '+':
-        this.firstval = (this.firstval + parseInt(this.display, 0));
+        if (this.iscomma === true) {
+          this.firstval = (this.firstval + parseFloat(this.display));
+        } else {
+          this.firstval = (this.firstval + parseInt(this.display, 0));
+        }
         break;
     }
     this.display = this.firstval.toString();
